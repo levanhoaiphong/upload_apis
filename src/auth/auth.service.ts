@@ -12,7 +12,7 @@ export class AuthService {
         return token
     }
     signIn(model) {
-        let { email, password } = model
-        return "OK"
+        let { email, password, name, age, avatar } = model
+        return model
     }
 }
