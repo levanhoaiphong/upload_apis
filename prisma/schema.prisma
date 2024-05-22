@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model comments {
+  comment_id Int       @id @default(autoincrement())
+  user_id    Int?
+  img_id     Int?
+  createAt   DateTime? @default(now()) @db.Timestamp(0)
+  content    Bytes?    @db.Blob
+}
+
+model images {
+  img_id      Int        @id @default(autoincrement())
+  name        String?    @db.VarChar(255)
+  img_link    Bytes?     @db.Blob
+  description Bytes?     @db.Blob
+  img_type    String?    @db.VarChar(50)
+  user_id     Int?
+  users       users?     @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "images_ibfk_1")
+  save_img    save_img[]
+
+  @@index([user_id], map: "images")
+}
+
+model save_img {
+  user_id  Int
+  img_id   Int
+  createAt DateTime? @default(now()) @db.Timestamp(0)
+  users    users     @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "save_img_ibfk_1")
+  images   images    @relation(fields: [img_id], references: [img_id], onDelete: NoAction, onUpdate: NoAction, map: "save_img_ibfk_2")
+
+  @@id([user_id, img_id])
+  @@index([img_id], map: "save_img")
+}
+
+model users {
+  user_id  Int        @id @default(autoincrement())
+  email    String?    @unique(map: "email") @db.VarChar(255)
+  passrowd String?    @db.VarChar(20)
+  name     String?    @db.VarChar(100)
+  age      Int?
+  avatar   Bytes?     @db.Blob
+  images   images[]
+  save_img save_img[]
+}
