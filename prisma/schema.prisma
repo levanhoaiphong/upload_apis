@@ -12,16 +12,22 @@ model comments {
   user_id    Int?
   img_id     Int?
   createAt   DateTime? @default(now()) @db.Timestamp(0)
-  content    Bytes?    @db.Blob
+  content    String?   @db.Text
+  users      users?    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "comments_ibfk_1")
+  images     images?   @relation(fields: [img_id], references: [img_id], onDelete: NoAction, onUpdate: NoAction, map: "comments_ibfk_2")
+
+  @@index([img_id], map: "img_id")
+  @@index([user_id], map: "user_id")
 }
 
 model images {
   img_id      Int        @id @default(autoincrement())
   name        String?    @db.VarChar(255)
-  img_link    Bytes?     @db.Blob
-  description Bytes?     @db.Blob
+  img_link    String?    @db.Text
+  description String?    @db.Text
   img_type    String?    @db.VarChar(50)
   user_id     Int?
+  comments    comments[]
   users       users?     @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "images_ibfk_1")
   save_img    save_img[]
 
@@ -42,10 +48,11 @@ model save_img {
 model users {
   user_id  Int        @id @default(autoincrement())
   email    String?    @unique(map: "email") @db.VarChar(255)
-  passrowd String?    @db.VarChar(20)
+  password String?    @db.VarChar(255)
   name     String?    @db.VarChar(100)
   age      Int?
-  avatar   Bytes?     @db.Blob
+  avatar   String?    @db.Text
+  comments comments[]
   images   images[]
   save_img save_img[]
 }
