@@ -14,6 +14,7 @@ export class ImagesController {
       filename: (req, file, callback) => callback(null, new Date().getTime() + "_" + file.originalname)
     })
   }))
+
   @Post("/upload-img")
   uploadImg(@Body() body, @UploadedFile() images: Express.Multer.File, @Headers("token") header){
     try {
@@ -26,6 +27,7 @@ export class ImagesController {
     }
   
   }
+
   @Get("/get-all-image")
   async findAllImage() {
     try {
@@ -47,6 +49,7 @@ export class ImagesController {
         throw new InternalServerErrorException("Internal Server Error ")
     }
   }
+  
   @Post("/create-comment")
   async createComment(@Body() body, @Headers("token") header){
     try {
