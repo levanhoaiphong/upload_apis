@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Headers, HttpCode, HttpException, InternalServerErrorException, Param, Post, Query, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, HttpCode, HttpException, InternalServerErrorException, Param, Post, Query, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ImagesService } from './images.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { Request } from 'express';
+import { query, Request } from 'express';
 
 @Controller('images')
 export class ImagesController {
@@ -64,5 +64,19 @@ export class ImagesController {
   @Get("/get-all-comment")
   async findCommentByCommentId(@Query('id') id:string ){
     return this.imagesService.findCommentByCommentId(id)
+  }
+
+  @Get("/search-image")
+  async searchImage (@Query('query') query: string){
+    return this.imagesService.searchImage(query)
+  }
+
+  @Post("/delete-image/:id")
+  async deleteImage(@Param("id") id: number, @Headers("token") header){
+    return this.imagesService.deleteImage(id, header)
+  }
+  @Post("/save-image")
+  async saveImage(@Body() body, @Headers("token") header){
+    return this.imagesService.saveImage(body, header)
   }
 }

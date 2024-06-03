@@ -61,4 +61,41 @@ export class ImagesService {
         })
         throw new SuccessException(HttpStatus.OK, dataComment, "Get All Comment Success", new Date().toISOString())
     }
+    async searchImage(query) {
+        const dataSearch = await this.prisma.images.findMany({
+            where: {
+                OR: [
+                    { name: { contains: query } },
+                    { img_type: { contains: query } },
+                ],
+            },
+        });
+        throw new SuccessException(HttpStatus.OK, dataSearch, "Get Data Search Success", new Date().toISOString()) 
+    }
+
+    async deleteImage(id, header) {
+        let decoToken = this.JwtService.decode(header);
+        const data = await this.prisma.images.delete({ 
+            where: { 
+                img_id: parseInt(id),
+                user_id: decoToken.data.id 
+            }})
+        throw new SuccessException(HttpStatus.OK, "", "Get Data Search Success", new Date().toISOString()) 
+    }
+    async saveImage(body, header){
+        const {img_id} = body
+        const decoToken = this.JwtService.decode(header);
+        const dataImage = await this.prisma.save_img.findFirst({
+            where:{
+                img_id: img_id,
+                user_id: decoToken.data.id
+            }
+        })
+        if (dataImage){
+
+        }else{
+            
+        }
+        console.log("dataImage", dataImage)
+    }
 }
