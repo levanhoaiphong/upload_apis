@@ -43,11 +43,10 @@ export class AuthService {
                 email: email
             }
         })
-        console.log("checkEmail", checkEmail)
         if (checkEmail){
             throw new HttpException("Email đã tồn tại", HttpStatus.BAD_REQUEST)
         }
         let data = await this.prisma.users.create({data: newUser})
-        throw new SuccessException(HttpStatus.OK, data, "Sign Success", new Date().toISOString())
+        throw new SuccessException(HttpStatus.CREATED, data, "Sign Success", new Date().toISOString())
     }
 }

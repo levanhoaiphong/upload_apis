@@ -22,12 +22,9 @@ export class ImagesController {
     } catch (exception) {
       if (exception.status != 500)
         throw new HttpException(exception.response, exception.status)
-
-      throw new InternalServerErrorException("Internal Server Error ")
+        throw new InternalServerErrorException("Internal Server Error ")
     }
-  
   }
-
   @Get("/get-all-image")
   async findAllImage() {
     try {
@@ -38,7 +35,6 @@ export class ImagesController {
       throw new InternalServerErrorException("Internal Server Error ")
     }
   }
-
   @Get("/detail-image/:id")
   async findImageById(@Param("id") id: string){
     try {
@@ -63,20 +59,55 @@ export class ImagesController {
 
   @Get("/get-all-comment")
   async findCommentByCommentId(@Query('id') id:string ){
-    return this.imagesService.findCommentByCommentId(id)
+    try {
+      return this.imagesService.findCommentByCommentId(id)
+    } catch (exception) {
+      if (exception.status != 500)
+        throw new HttpException(exception.response, exception.status)
+      throw new InternalServerErrorException("Internal Server Error ")
+    }
   }
 
   @Get("/search-image")
   async searchImage (@Query('query') query: string){
-    return this.imagesService.searchImage(query)
+    try {
+      return this.imagesService.searchImage(query)
+    } catch (exception) {
+      if (exception.status != 500)
+        throw new HttpException(exception.response, exception.status)
+      throw new InternalServerErrorException("Internal Server Error ")
+    }
   }
 
   @Post("/delete-image/:id")
   async deleteImage(@Param("id") id: number, @Headers("token") header){
-    return this.imagesService.deleteImage(id, header)
+    try {
+      return this.imagesService.deleteImage(id, header)
+    } catch (exception) {
+      if (exception.status != 500)
+        throw new HttpException(exception.response, exception.status)
+      throw new InternalServerErrorException("Internal Server Error ")
+    }
   }
   @Post("/save-image")
   async saveImage(@Body() body, @Headers("token") header){
-    return this.imagesService.saveImage(body, header)
+    try {
+      return this.imagesService.saveImage(body, header)
+    } catch (exception) {
+      if (exception.status != 500)
+        throw new HttpException(exception.response, exception.status)
+      throw new InternalServerErrorException("Internal Server Error ")
+    }
+
+  }
+  @Get("/get-all-img-saved")
+  async getAllImgSaved(@Headers("token") header) {
+    try {
+    return this.imagesService.getAllImgSaved(header)
+    } catch (exception) {
+      if (exception.status != 500)
+        throw new HttpException(exception.response, exception.status)
+      throw new InternalServerErrorException("Internal Server Error ")
+    }
   }
 }

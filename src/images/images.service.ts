@@ -13,8 +13,9 @@ export class ImagesService {
         throw new SuccessException(HttpStatus.OK, data, "Sign Success", new Date().toISOString())
     }
     async uploadImg (model, file, header) {
+        console.log("file", file)
         const { name, description, img_type} = model
-        const imgUrl = `http://localhost:8080/${file.path}`
+        const imgUrl = `http://localhost:8080/public/avatar/${file.filename}`
         let decoToken = this.JwtService.decode(header)
         let  imgNew = {
             name,
@@ -24,7 +25,7 @@ export class ImagesService {
             user_id: decoToken.data.id,
         }
         await this.prisma.images.create({ data: imgNew })
-        throw new SuccessException(HttpStatus.OK, "", "Create Image Success", new Date().toISOString())
+        throw new SuccessException(HttpStatus.CREATED, "", "Create Image Success", new Date().toISOString())
     }
 
     async findImageById(id) {
@@ -72,10 +73,9 @@ export class ImagesService {
         });
         throw new SuccessException(HttpStatus.OK, dataSearch, "Get Data Search Success", new Date().toISOString()) 
     }
-
     async deleteImage(id, header) {
         let decoToken = this.JwtService.decode(header);
-        const data = await this.prisma.images.delete({ 
+        await this.prisma.images.delete({ 
             where: { 
                 img_id: parseInt(id),
                 user_id: decoToken.data.id 
@@ -83,7 +83,7 @@ export class ImagesService {
         throw new SuccessException(HttpStatus.OK, "", "Get Data Search Success", new Date().toISOString()) 
     }
     async saveImage(body, header){
-        const {img_id} = body
+        const { img_id } = body
         const decoToken = this.JwtService.decode(header);
         const dataImage = await this.prisma.save_img.findFirst({
             where:{
@@ -91,11 +91,30 @@ export class ImagesService {
                 user_id: decoToken.data.id
             }
         })
-        if (dataImage){
-
-        }else{
-            
+        let saveImg = {
+            img_id: img_id,
+            user_id: decoToken.data.id,
         }
-        console.log("dataImage", dataImage)
+        if (dataImage){
+            await this.prisma.save_img.deleteMany({
+                where: {
+                    img_id: img_id,
+                    user_id: decoToken.data.id
+                }
+            })
+            throw new SuccessException(HttpStatus.OK, "", "Delete Save", new Date().toISOString()) 
+        }else{
+            await this.prisma.save_img.create({ data: saveImg })
+            throw new SuccessException(HttpStatus.CREATED, "", "Save Img Success", new Date().toISOString()) 
+        }
+    }
+    async getAllImgSaved(header){
+        const decoToken = this.JwtService.decode(header);
+        const getAllImg =  await this.prisma.save_img.findMany({
+            where:{
+                user_id: decoToken.data.id
+            },include:{users: true, images:true}
+        })
+        throw new SuccessException(HttpStatus.OK, getAllImg, "Save Img Success", new Date().toISOString()) 
     }
 }
